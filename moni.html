@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Alcohol Detection Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      padding-top: 60px;
+    }
+    h1 {
+      color: #333;
+    }
+    #value, #status {
+      font-size: 2em;
+      margin: 20px;
+      padding: 20px;
+      background: white;
+      display: inline-block;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    #status.detected {
+      color: red;
+      font-weight: bold;
+    }
+    #status.safe {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚗 Alcohol Sensor Monitoring</h1>
+  <div id="value">Alcohol Value: ...</div>
+  <div id="status">Status: ...</div>
+
+  <script>
+    const firebaseURL = "https://myiot-bee74-default-rtdb.firebaseio.com/alcohol.json";
+
+    function updateDisplay() {
+      fetch(firebaseURL)
+        .then(response => response.json())
+        .then(data => {
+          const valueEl = document.getElementById("value");
+          const statusEl = document.getElementById("status");
+
+          valueEl.innerText = `Alcohol Value: ${data.value}`;
+          statusEl.innerText = `Status: ${data.status}`;
+
+          if (data.status === "Detected") {
+            statusEl.className = "detected";
+          } else {
+            statusEl.className = "safe";
+          }
+        })
+        .catch(err => {
+          document.getElementById("value").innerText = "Error fetching data!";
+          document.getElementById("status").innerText = "";
+          console.error(err);
+        });
+    }
+
+    updateDisplay();             // Initial fetch
+    setInterval(updateDisplay, 5000); // Refresh every 5 sec
+  </script>
+</body>
+</html>
